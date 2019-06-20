@@ -13,7 +13,7 @@ public class BoardSquare extends Region {
     setPrefSize(200, 200);
   }
   public void highlight() {
-    setColor(Color.YELLOW);
+    setColor(Color.LAVENDERBLUSH);
   }
   public void blacken() {
     setColor(color);

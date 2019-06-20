@@ -54,6 +54,7 @@ public class Main extends Application {
 
 	private final int ROW_COUNT = 8;
 	private final int COL_COUNT = 8;
+	private boolean isFirstUser = true;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -89,7 +90,7 @@ public class Main extends Application {
 	}
 
 	public StackPane getBoardSquare() {
-		BoardSquare square = new BoardSquare(Color.BLACK);
+		BoardSquare square = new BoardSquare(Color.HOTPINK);
 		StackPane stackPane = new StackPane(square);
 		stackPane.setOnMouseEntered(e -> square.highlight());
 		stackPane.setOnMouseExited(e -> square.blacken());
@@ -101,7 +102,16 @@ public class Main extends Application {
 						.then(square.heightProperty().subtract(12).divide(2))
 						.otherwise(square.widthProperty().subtract(12).divide(2));
 				circle.radiusProperty().bind(radiusProperty);
-				circle.setFill(Color.BEIGE);
+				if (isFirstUser)
+				{
+					circle.setFill(Color.LAVENDERBLUSH);
+					isFirstUser = false;
+				}
+				else
+				{
+					circle.setFill(Color.BLACK);
+					isFirstUser = true;
+				}
 			}
 
 			@Override
