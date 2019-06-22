@@ -6,18 +6,23 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 
 public class BoardSquare extends Region {
+	
   private Color color;
+  
   public BoardSquare(Color defaultColor) {
     color = defaultColor;
     setColor(color);
     setPrefSize(200, 200);
   }
+  
   public void highlight() {
-    setColor(Color.LAVENDERBLUSH);
+    setColor(Color.PINK);
   }
+  
   public void blacken() {
     setColor(color);
   }
+  
   public void setColor(Color color) {
     BackgroundFill bgFill = new BackgroundFill(color, CornerRadii.EMPTY, new Insets(2));
     Background bg = new Background(bgFill);
