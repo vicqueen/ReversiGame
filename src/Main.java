@@ -167,7 +167,6 @@ public class Main extends Application {
 	{
 		Paint colour = isFirstUser ? Color.LAVENDERBLUSH : Color.BLACK;
 		isFirstUser = !isFirstUser;
-		addCircleToTheBoard(row, col, colour);
 		
 		changeAllCirclesColourVertically(true, colour, row, col);
 		changeAllCirclesColourVertically(false, colour, row, col);
@@ -195,6 +194,7 @@ public class Main extends Application {
 			
 			while (!isSameColourOrNull(colour, r, c))
 			{
+				addCircleToTheBoard(row, col, colour);
 				addCircleToTheBoard(r, c, colour);
 				r = increaseOrDecreaseValue(shouldRowIncrease, r);
 				c = increaseOrDecreaseValue(shouldColIncrease, c);
@@ -229,7 +229,8 @@ public class Main extends Application {
 			
 			while (!isSameColourOrNull(colour, i, col))
 			{
-				addCircleToTheBoard(i, col, getOppositeColour(colour));
+				addCircleToTheBoard(row, col, colour);
+				addCircleToTheBoard(i, col, colour);
 				i = increaseOrDecreaseValue(shouldGoUp, i);
 			}
 		}
@@ -252,7 +253,8 @@ public class Main extends Application {
 			int i = increaseOrDecreaseValue(shouldGoRight, col);
 			while (!isSameColourOrNull(colour, row, i))
 			{
-				addCircleToTheBoard(row, i, getOppositeColour(colour));
+				addCircleToTheBoard(row, col, colour);
+				addCircleToTheBoard(row, i, colour);
 				i = increaseOrDecreaseValue(shouldGoRight, i);
 			}
 		}
