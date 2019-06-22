@@ -213,7 +213,7 @@ public class Main extends Application {
 			c = increaseOrDecreaseValue(shouldColIncrease, c);
 		}
 		
-		return getCircleColour(row, col).equals(colour);
+		return getCircleColour(r, c).equals(colour);
 	}
 	
 	private int increaseOrDecreaseValue(boolean shouldIncrease, int number)
@@ -242,7 +242,7 @@ public class Main extends Application {
 		while (!isSameColourOrNull(colour, i, col))
 			i = increaseOrDecreaseValue(shouldGoUp, i);
 		
-		return getCircleColour(row, col).equals(colour);
+		return getCircleColour(i, col).equals(colour);
 	}
 	
 	private void changeAllCirclesColourHorizontally(boolean shouldGoRight, Paint colour, int row, int col)
@@ -265,7 +265,7 @@ public class Main extends Application {
 		while (!isSameColourOrNull(colour, row, i))
 			i = increaseOrDecreaseValue(shouldGoRight, i);
 		
-		return getCircleColour(row, col).equals(colour);
+		return getCircleColour(row, i).equals(colour);
 	}
 	
 	private void addCircleToTheBoard(int row, int col, Paint colour)
