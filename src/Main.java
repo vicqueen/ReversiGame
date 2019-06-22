@@ -44,6 +44,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -96,64 +97,116 @@ public class Main extends Application {
 		cells[row][col] = new Cell(); {
 			cells[row][col].boardSquare = new BoardSquare(Color.HOTPINK);
 			cells[row][col].stackPane = new StackPane(cells[row][col].boardSquare);
+			cells[row][col].circle = new Circle();
+			{
+				NumberBinding radiusProperty = Bindings
+						.when(cells[row][col].boardSquare.widthProperty().greaterThan(cells[row][col].boardSquare.heightProperty()))
+						.then(cells[row][col].boardSquare.heightProperty().subtract(12).divide(2))
+						.otherwise(cells[row][col].boardSquare.widthProperty().subtract(12).divide(2));
+				cells[row][col].circle.radiusProperty().bind(radiusProperty);
+			}
 		}
 		cells[row][col].stackPane.setOnMouseEntered(e -> cells[row][col].boardSquare.highlight());
 		cells[row][col].stackPane.setOnMouseExited(e -> cells[row][col].boardSquare.blacken());
 		cells[row][col].stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent arg0) {
-				cells[row][col].circle = new Circle();
-				{
-					NumberBinding radiusProperty = Bindings
-							.when(cells[row][col].boardSquare.widthProperty().greaterThan(cells[row][col].boardSquare.heightProperty()))
-							.then(cells[row][col].boardSquare.heightProperty().subtract(12).divide(2))
-							.otherwise(cells[row][col].boardSquare.widthProperty().subtract(12).divide(2));
-					cells[row][col].circle.radiusProperty().bind(radiusProperty);
-					if (isFirstUser)
-					{
-						cells[row][col].circle.setFill(Color.LAVENDERBLUSH);
-						isFirstUser = false;
-					}
-					else
-					{
-						cells[row][col].circle.setFill(Color.BLACK);
-						isFirstUser = true;
-					}
-				}
 				
-				if (cells[row][col].stackPane.getChildren().contains(cells[row][col].circle)) {
-					cells[row][col].stackPane.getChildren().remove(cells[row][col].circle);
-				} else {
-					cells[row][col].stackPane.getChildren().add(cells[row][col].circle);
-				}
+				if(isCorrectPositionToMoveTo(row, col))
+					changeAllDiagonalAndPerpendicularCirclesColours(row, col);
 			}
 		});
 		return cells[row][col].stackPane;
 	}
 	
-	private Circle getColouredCircle(boolean isWhite, BoardSquare square)
+	private void changeCircleColour(boolean isWhite, int row, int col)
 	{
-		Circle circle = new Circle();
-		{
-			NumberBinding radiusProperty = Bindings
-					.when(square.widthProperty().greaterThan(square.heightProperty()))
-					.then(square.heightProperty().subtract(12).divide(2))
-					.otherwise(square.widthProperty().subtract(12).divide(2));
-			circle.radiusProperty().bind(radiusProperty);
 			if (isWhite)
-				circle.setFill(Color.LAVENDERBLUSH);
+				addCircleToTheBoard(row, col, Color.LAVENDERBLUSH);
 			else
-				circle.setFill(Color.BLACK);
-
-		}
-		return circle;
+				addCircleToTheBoard(row, col, Color.BLACK);
 	}
 	
 	private void getInitialPawnPosition()
 	{
-		cells[3][3].stackPane.getChildren().add(getColouredCircle(true, cells[3][3].boardSquare));
-		cells[3][4].stackPane.getChildren().add(getColouredCircle(false, cells[3][3].boardSquare));
-		cells[4][3].stackPane.getChildren().add(getColouredCircle(false, cells[3][3].boardSquare));
-		cells[4][4].stackPane.getChildren().add(getColouredCircle(true, cells[3][3].boardSquare));
+		changeCircleColour(true, 3, 3);
+		changeCircleColour(false, 3, 4);
+		changeCircleColour(false, 4, 3);
+		changeCircleColour(true, 4, 4);
+	}
+	
+	private boolean isCorrectPositionToMoveTo(int row, int col)
+	{
+		Paint colour = isFirstUser ? Color.LAVENDERBLUSH : Color.BLACK;
+		return !isSameColourOrNull(colour, row-1, col)
+				|| !isSameColourOrNull(colour, row-1, col-1)
+				|| !isSameColourOrNull(colour, row, col-1)
+				|| !isSameColourOrNull(colour, row+1, col+1)
+				|| !isSameColourOrNull(colour, row+1, col)
+				|| !isSameColourOrNull(colour, row, col+1);
+	}
+	
+	private Paint getCircleColour(int row, int col)
+	{
+		return cells[row][col].circle.getFill();
+	}
+	
+	private boolean isSameColourOrNull(Paint colour, int row, int col)
+	{
+		if (row >= ROW_COUNT || row < 0 || col >= COL_COUNT || col < 0)
+			return false;
+		return getCircleColour(row, col) == null || getCircleColour(row, col) == colour;
+	}
+	
+	private void changeAllDiagonalAndPerpendicularCirclesColours(int row, int col)
+	{
+		Paint colour = isFirstUser ? Color.LAVENDERBLUSH : Color.BLACK;
+		isFirstUser = !isFirstUser;
+			
+		for (int i = row; i < ROW_COUNT; i++)
+		{
+			if (!isSameColourOrNull(colour, i, col))
+				addCircleToTheBoard(i, col, getOppositeColour(colour));
+		}
+		
+		for (int i = col; i < COL_COUNT; i++)
+		{
+			if (!isSameColourOrNull(colour, row, i))
+				addCircleToTheBoard(row, i, getOppositeColour(colour));
+		}
+		
+		int r = 0;
+		int c = 0;
+		
+		while (r < ROW_COUNT-1 && r > 0 && c < COL_COUNT-1 && c > 0)
+		{
+			if (!isSameColourOrNull(colour, r, c))
+				addCircleToTheBoard(r, c, getOppositeColour(colour));
+			r++;
+			c++;
+		}
+		r = 0;
+		c = 0;
+		
+		while (r < ROW_COUNT && r > 0 && c < COL_COUNT && c > 0)
+		{
+			if (!isSameColourOrNull(colour, r, c))
+				addCircleToTheBoard(r, c, getOppositeColour(colour));
+			r--;
+			c--;
+		}
+	}
+	
+	private void addCircleToTheBoard(int row, int col, Paint colour)
+	{
+		cells[row][col].circle.setFill(colour);
+		cells[row][col].stackPane.getChildren().add(cells[row][col].circle);
+	}
+	
+	private Paint getOppositeColour(Paint colour)
+	{
+		if (colour == Color.LAVENDERBLUSH)
+			return Color.BLACK;
+		return Color.LAVENDERBLUSH;
 	}
 }
