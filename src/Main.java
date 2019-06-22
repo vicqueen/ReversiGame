@@ -55,8 +55,7 @@ public class Main extends Application {
 	private final int ROW_COUNT = 8;
 	private final int COL_COUNT = 8;
 	private boolean isFirstUser = true;
-	private StackPane[][] stackPanes = new StackPane[ROW_COUNT][COL_COUNT];
-	private BoardSquare[][] boardSquares = new BoardSquare[ROW_COUNT][COL_COUNT]; 
+	private Cell[][] cells = new Cell[ROW_COUNT][COL_COUNT];
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -94,40 +93,42 @@ public class Main extends Application {
 	}
 
 	public StackPane getBoardSquare(int row, int col) {
-		boardSquares[row][col] = new BoardSquare(Color.HOTPINK);
-		stackPanes[row][col] = new StackPane(boardSquares[row][col]);
-		stackPanes[row][col].setOnMouseEntered(e -> boardSquares[row][col].highlight());
-		stackPanes[row][col].setOnMouseExited(e -> boardSquares[row][col].blacken());
-		stackPanes[row][col].setOnMouseClicked(new EventHandler<MouseEvent>() {
+		cells[row][col] = new Cell(); {
+			cells[row][col].boardSquare = new BoardSquare(Color.HOTPINK);
+			cells[row][col].stackPane = new StackPane(cells[row][col].boardSquare);
+		}
+		cells[row][col].stackPane.setOnMouseEntered(e -> cells[row][col].boardSquare.highlight());
+		cells[row][col].stackPane.setOnMouseExited(e -> cells[row][col].boardSquare.blacken());
+		cells[row][col].stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent arg0) {
-				Circle circle = new Circle();
+				cells[row][col].circle = new Circle();
 				{
 					NumberBinding radiusProperty = Bindings
-							.when(boardSquares[row][col].widthProperty().greaterThan(boardSquares[row][col].heightProperty()))
-							.then(boardSquares[row][col].heightProperty().subtract(12).divide(2))
-							.otherwise(boardSquares[row][col].widthProperty().subtract(12).divide(2));
-					circle.radiusProperty().bind(radiusProperty);
+							.when(cells[row][col].boardSquare.widthProperty().greaterThan(cells[row][col].boardSquare.heightProperty()))
+							.then(cells[row][col].boardSquare.heightProperty().subtract(12).divide(2))
+							.otherwise(cells[row][col].boardSquare.widthProperty().subtract(12).divide(2));
+					cells[row][col].circle.radiusProperty().bind(radiusProperty);
 					if (isFirstUser)
 					{
-						circle.setFill(Color.LAVENDERBLUSH);
+						cells[row][col].circle.setFill(Color.LAVENDERBLUSH);
 						isFirstUser = false;
 					}
 					else
 					{
-						circle.setFill(Color.BLACK);
+						cells[row][col].circle.setFill(Color.BLACK);
 						isFirstUser = true;
 					}
 				}
 				
-				if (stackPanes[row][col].getChildren().contains(circle)) {
-					stackPanes[row][col].getChildren().remove(circle);
+				if (cells[row][col].stackPane.getChildren().contains(cells[row][col].circle)) {
+					cells[row][col].stackPane.getChildren().remove(cells[row][col].circle);
 				} else {
-					stackPanes[row][col].getChildren().add(circle);
+					cells[row][col].stackPane.getChildren().add(cells[row][col].circle);
 				}
 			}
 		});
-		return stackPanes[row][col];
+		return cells[row][col].stackPane;
 	}
 	
 	private Circle getColouredCircle(boolean isWhite, BoardSquare square)
@@ -150,9 +151,9 @@ public class Main extends Application {
 	
 	private void getInitialPawnPosition()
 	{
-		stackPanes[3][3].getChildren().add(getColouredCircle(true, boardSquares[3][3]));
-		stackPanes[3][4].getChildren().add(getColouredCircle(false, boardSquares[3][3]));
-		stackPanes[4][3].getChildren().add(getColouredCircle(false, boardSquares[3][3]));
-		stackPanes[4][4].getChildren().add(getColouredCircle(true, boardSquares[3][3]));
+		cells[3][3].stackPane.getChildren().add(getColouredCircle(true, cells[3][3].boardSquare));
+		cells[3][4].stackPane.getChildren().add(getColouredCircle(false, cells[3][3].boardSquare));
+		cells[4][3].stackPane.getChildren().add(getColouredCircle(false, cells[3][3].boardSquare));
+		cells[4][4].stackPane.getChildren().add(getColouredCircle(true, cells[3][3].boardSquare));
 	}
 }
