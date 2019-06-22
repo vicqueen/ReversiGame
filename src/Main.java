@@ -21,7 +21,6 @@ public class Main extends Application {
 	private Cell[][] cells = new Cell[ROW_COUNT][COL_COUNT];
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		launch(args);
 	}
 
@@ -42,7 +41,6 @@ public class Main extends Application {
 		for (int row = 0; row < ROW_COUNT; row++) {
 			RowConstraints constrains = new RowConstraints();
 			constrains.setPercentHeight(20);
-			;
 			board.getRowConstraints().add(constrains);
 		}
 		for (int col = 0; col < COL_COUNT; col++) {
