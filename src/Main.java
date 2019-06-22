@@ -140,14 +140,15 @@ public class Main extends Application {
 	private boolean isCorrectPositionToMoveTo(int row, int col)
 	{
 		Paint colour = isFirstUser ? Color.LAVENDERBLUSH : Color.BLACK;
-		return !isSameColourOrNull(colour, row-1, col-1)
+		return !isCirclePresent(row, col) 
+				&& (!isSameColourOrNull(colour, row-1, col-1)
 				|| !isSameColourOrNull(colour, row-1, col)
 				|| !isSameColourOrNull(colour, row-1, col+1)
 				|| !isSameColourOrNull(colour, row, col-1)
 				|| !isSameColourOrNull(colour, row, col+1)
 				|| !isSameColourOrNull(colour, row+1, col-1)
 				|| !isSameColourOrNull(colour, row+1, col)
-				|| !isSameColourOrNull(colour, row+1, col+1);
+				|| !isSameColourOrNull(colour, row+1, col+1));
 	}
 	
 	private Paint getCircleColour(int row, int col)
@@ -187,15 +188,32 @@ public class Main extends Application {
 	
 	private void changeAllCirclesColoursInOneDiagonalDirection(boolean shouldRowIncrease, boolean shouldColIncrease, Paint colour, int row, int col)
 	{
+		if (isSameColourCircleAtTheEndDiagonally(shouldRowIncrease, shouldColIncrease, colour, row, col))
+		{
+			int r = increaseOrDecreaseValue(shouldRowIncrease, row);;
+			int c = increaseOrDecreaseValue(shouldColIncrease, col);;
+			
+			while (!isSameColourOrNull(colour, r, c))
+			{
+				addCircleToTheBoard(r, c, colour);
+				r = increaseOrDecreaseValue(shouldRowIncrease, r);
+				c = increaseOrDecreaseValue(shouldColIncrease, c);
+			}
+		}
+	}
+	
+	private boolean isSameColourCircleAtTheEndDiagonally(boolean shouldRowIncrease, boolean shouldColIncrease, Paint colour, int row, int col)
+	{
 		int r = increaseOrDecreaseValue(shouldRowIncrease, row);;
 		int c = increaseOrDecreaseValue(shouldColIncrease, col);;
 		
 		while (!isSameColourOrNull(colour, r, c))
 		{
-			addCircleToTheBoard(r, c, colour);
 			r = increaseOrDecreaseValue(shouldRowIncrease, r);
 			c = increaseOrDecreaseValue(shouldColIncrease, c);
 		}
+		
+		return getCircleColour(row, col).equals(colour);
 	}
 	
 	private int increaseOrDecreaseValue(boolean shouldIncrease, int number)
@@ -203,31 +221,63 @@ public class Main extends Application {
 		return shouldIncrease ? ++number : --number;
 	}
 	
-	private void changeAllCirclesColourVertically(boolean shouldGoUp, Paint colour, int row, int col)
+	private void changeAllCirclesColourVertically(boolean shouldGoUp, Paint colour, int row, int col) {
+		
+		if (isSameColourCircleAtTheEndVertically(shouldGoUp, colour, row, col))
+		{
+			int i = increaseOrDecreaseValue(shouldGoUp, row);
+			
+			while (!isSameColourOrNull(colour, i, col))
+			{
+				addCircleToTheBoard(i, col, getOppositeColour(colour));
+				i = increaseOrDecreaseValue(shouldGoUp, i);
+			}
+		}
+	}
+	
+	private boolean isSameColourCircleAtTheEndVertically(boolean shouldGoUp, Paint colour, int row, int col)
 	{
 		int i = increaseOrDecreaseValue(shouldGoUp, row);
+		
 		while (!isSameColourOrNull(colour, i, col))
-		{
-			addCircleToTheBoard(i, col, getOppositeColour(colour));
 			i = increaseOrDecreaseValue(shouldGoUp, i);
-		}
+		
+		return getCircleColour(row, col).equals(colour);
 	}
 	
 	private void changeAllCirclesColourHorizontally(boolean shouldGoRight, Paint colour, int row, int col)
 	{
-		int i = increaseOrDecreaseValue(shouldGoRight, col);
-		while (!isSameColourOrNull(colour, row, i))
+		if (isSameColourCircleAtTheEndHorizontally(shouldGoRight, colour, row, col))
 		{
-			addCircleToTheBoard(row, i, getOppositeColour(colour));
-			i = increaseOrDecreaseValue(shouldGoRight, i);
+			int i = increaseOrDecreaseValue(shouldGoRight, col);
+			while (!isSameColourOrNull(colour, row, i))
+			{
+				addCircleToTheBoard(row, i, getOppositeColour(colour));
+				i = increaseOrDecreaseValue(shouldGoRight, i);
+			}
 		}
+	}
+	
+	private boolean isSameColourCircleAtTheEndHorizontally(boolean shouldGoRight, Paint colour, int row, int col)
+	{
+		int i = increaseOrDecreaseValue(shouldGoRight, col);
+		
+		while (!isSameColourOrNull(colour, row, i))
+			i = increaseOrDecreaseValue(shouldGoRight, i);
+		
+		return getCircleColour(row, col).equals(colour);
 	}
 	
 	private void addCircleToTheBoard(int row, int col, Paint colour)
 	{
 		cells[row][col].circle.setFill(colour);
-		if (!cells[row][col].stackPane.getChildren().contains(cells[row][col].circle))
+		if (!isCirclePresent(row, col))
 			cells[row][col].stackPane.getChildren().add(cells[row][col].circle);
+	}
+	
+	private boolean isCirclePresent(int row, int col)
+	{
+		return cells[row][col].stackPane.getChildren().contains(cells[row][col].circle);
 	}
 	
 	private Paint getOppositeColour(Paint colour)
