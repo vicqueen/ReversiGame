@@ -226,7 +226,8 @@ public class Main extends Application {
 	private void addCircleToTheBoard(int row, int col, Paint colour)
 	{
 		cells[row][col].circle.setFill(colour);
-		cells[row][col].stackPane.getChildren().add(cells[row][col].circle);
+		if (!cells[row][col].stackPane.getChildren().contains(cells[row][col].circle))
+			cells[row][col].stackPane.getChildren().add(cells[row][col].circle);
 	}
 	
 	private Paint getOppositeColour(Paint colour)
