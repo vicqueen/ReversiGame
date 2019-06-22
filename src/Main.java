@@ -87,8 +87,10 @@ public class Main extends Application {
 			ColumnConstraints constrains = new ColumnConstraints();
 			constrains.setPercentWidth(20);
 			board.getColumnConstraints().add(constrains);
-		}		
-		return getInitialPawnPosition(board);
+		}
+		getInitialPawnPosition();
+		
+		return board;
 	}
 
 	public StackPane getBoardSquare(int row, int col) {
@@ -146,12 +148,11 @@ public class Main extends Application {
 		return circle;
 	}
 	
-	private GridPane getInitialPawnPosition(GridPane gridPane)
+	private void getInitialPawnPosition()
 	{
 		stackPanes[3][3].getChildren().add(getColouredCircle(true, boardSquares[3][3]));
 		stackPanes[3][4].getChildren().add(getColouredCircle(false, boardSquares[3][3]));
 		stackPanes[4][3].getChildren().add(getColouredCircle(false, boardSquares[3][3]));
 		stackPanes[4][4].getChildren().add(getColouredCircle(true, boardSquares[3][3]));
-		return gridPane;
 	}
 }
