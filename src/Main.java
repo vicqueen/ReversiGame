@@ -1,6 +1,9 @@
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -12,12 +15,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Main extends Application {
 
 	private final int ROW_COUNT = 8;
 	private final int COL_COUNT = 8;
 	private boolean isFirstUser = true;
+	private Timeline timeline;
 	private Cell[][] cells = new Cell[ROW_COUNT][COL_COUNT];
 
 	public static void main(String[] args) {
@@ -49,6 +54,21 @@ public class Main extends Application {
 			board.getColumnConstraints().add(constrains);
 		}
 		getInitialPawnPosition();
+		
+		KeyFrame keyFrame = new KeyFrame(Duration.seconds(1));
+		timeline = new Timeline(keyFrame);
+		timeline.setCycleCount(15);
+		timeline.setOnFinished(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event)
+			{
+
+				isFirstUser = !isFirstUser;
+				timeline.stop();
+				timeline.play();
+			}
+		});
+		timeline.play();
 		
 		return board;
 	}
@@ -135,6 +155,9 @@ public class Main extends Application {
 		changeAllCirclesColourHorizontally(false, colour, row, col);
 		
 		changeAllCirclesColoursDiagonally(colour, row, col);
+		
+		timeline.stop();
+		timeline.play();
 	}
 	
 	private void changeAllCirclesColoursDiagonally(Paint colour, int row, int col)
@@ -149,8 +172,8 @@ public class Main extends Application {
 	{
 		if (isSameColourCircleAtTheEndDiagonally(shouldRowIncrease, shouldColIncrease, colour, row, col))
 		{
-			int r = increaseOrDecreaseValue(shouldRowIncrease, row);;
-			int c = increaseOrDecreaseValue(shouldColIncrease, col);;
+			int r = increaseOrDecreaseValue(shouldRowIncrease, row);
+			int c = increaseOrDecreaseValue(shouldColIncrease, col);
 			
 			while (!isSameColourOrNull(colour, r, c))
 			{
@@ -164,8 +187,8 @@ public class Main extends Application {
 	
 	private boolean isSameColourCircleAtTheEndDiagonally(boolean shouldRowIncrease, boolean shouldColIncrease, Paint colour, int row, int col)
 	{
-		int r = increaseOrDecreaseValue(shouldRowIncrease, row);;
-		int c = increaseOrDecreaseValue(shouldColIncrease, col);;
+		int r = increaseOrDecreaseValue(shouldRowIncrease, row);
+		int c = increaseOrDecreaseValue(shouldColIncrease, col);
 		
 		while (!isSameColourOrNull(colour, r, c))
 		{
